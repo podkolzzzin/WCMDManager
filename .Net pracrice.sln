@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = ".Net pracrice", ".Net pracrice\.Net pracrice.csproj", "{3DF4B41A-8DBA-43C3-9AE4-AE53D61F9085}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3DF4B41A-8DBA-43C3-9AE4-AE53D61F9085}.Debug|x86.ActiveCfg = Debug|x86
+		{3DF4B41A-8DBA-43C3-9AE4-AE53D61F9085}.Debug|x86.Build.0 = Debug|x86
+		{3DF4B41A-8DBA-43C3-9AE4-AE53D61F9085}.Release|x86.ActiveCfg = Release|x86
+		{3DF4B41A-8DBA-43C3-9AE4-AE53D61F9085}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

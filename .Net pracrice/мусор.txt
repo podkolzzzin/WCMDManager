@@ -1,0 +1,191 @@
+        public ScrollBar(int x, int y, int scrollBarHeight, int contentHeight)
+        {
+            _x=x;
+            _y=y;
+            _scrollHeight=scrollBarHeight;
+            _contentHeight=contentHeight;
+
+            if (_scrollHeight >= contentHeight) return;
+            _curY = 0;
+            _curVirtY = 0;
+            
+            Console.SetCursorPosition(x, y);
+            Console.Write('=');
+            Console.SetCursorPosition(x, y + _scrollHeight);
+            Console.Write('=');
+            _y++;
+            _scrollHeight -= 2;
+            _delta = (double)contentHeight / (double)(_scrollHeight);
+            Border.drawVertical(x, y, (int)(scrollBarHeight / _delta));
+        }
+        public void down()
+        {
+            _curVirtY++;
+            downRedraw((int)Math.Round(_curVirtY/_delta), _curY);
+        }
+        private void downRedraw(int newY,int curY)
+        {
+            for (; curY < newY; curY++)
+            {
+                Console.SetCursorPosition(_x, _y + curY);
+                Console.Write(' ');
+                Console.SetCursorPosition(_x, curY + (int)(_scrollHeight / _delta));
+                Console.Write(Border.vert);
+            }
+            _curY = newY;
+        }
+        private void up(int index)
+        {
+            if (index >= 0)
+            {
+                _clear();
+                currentMin--;
+                currentMax--;
+                for (int i = currentMin; i <= currentMax; i++)
+                {
+                    addChild((string)texts[i]);
+                    currentMax = index;
+                }
+                ((ConsoleElement)children[index - currentMin]).active();
+            }
+        }
+        private void down(int index)
+        {
+            if (index < texts.Count )
+            {
+                _clear();
+                currentMax++;
+                currentMin++;
+                for (int i = currentMin; i <= currentMax; i++)
+                {
+                    addChild((string)texts[i]);
+                    currentMax = index;
+                }
+                ((ConsoleElement)children[currentMax]).active();
+            }
+        }
+        private int _x,_y,_scrollHeight,_contentHeight,_fullHeight;
+        private int _curY,_curVirtY;
+        private double _delta,_deltaSpec;
+        private int _elementHeight;
+        private ConsoleColor _color;
+        public ScrollBar(int x, int y, int fullHeight, int contentHeight,bool needEnds=false,ConsoleColor color=ConsoleColor.White)
+        {
+            _fullHeight = fullHeight;
+            _x = x;
+
+            clearScrollElement();
+            if (needEnds)
+            {
+                _y = y + 1;
+                _scrollHeight = _fullHeight - 2;
+            }
+            else
+            {
+                _y = y;
+                _scrollHeight = _fullHeight;
+            }
+            _contentHeight = contentHeight;
+            _color = color;
+            _delta = _contentHeight / _scrollHeight;
+            if (_delta != 0)
+                _elementHeight = (int)(_scrollHeight / _delta);
+            else
+                _elementHeight = _scrollHeight;
+            if (_elementHeight == 0) _elementHeight = 1;
+            if (_scrollHeight > _elementHeight)
+                _deltaSpec = _contentHeight / (_scrollHeight - _elementHeight);
+            else
+                _deltaSpec = 0;
+
+            Console.ForegroundColor = _color;
+            if (needEnds)
+            {
+                Console.SetCursorPosition(_x, _y - 1);
+                Console.Write('=');
+                Console.SetCursorPosition(_x, _y + _scrollHeight);
+                Console.Write('=');
+            }
+            Border.drawVertical(_x, _y, _elementHeight, color);
+            _curVirtY = _curY = 0;
+        }
+        public void down()
+        {
+            if (_curVirtY + 1 < _contentHeight)
+            {
+                _curVirtY++;
+                if (_curVirtY == _contentHeight - 1)
+                {
+                    setLastPos();
+                    return;
+                }
+                int t = (int)(_curVirtY / _deltaSpec);
+                if (t != _curY) downRedraw(t, _curY);
+            }
+        }
+        public void setPos(int pos)
+        {
+            Console.SetCursorPosition(0, 54);
+            Console.Write(pos);
+            if (_curVirtY + pos < _contentHeight)
+            {
+                _curVirtY += pos;
+                if (_curVirtY == _contentHeight - 1)
+                {
+                    setLastPos();
+                    return;
+                }
+                int t = (int)(_curVirtY / _deltaSpec);
+                if (t != _curY)
+                {
+                    _curY = t;
+                    redraw();
+                }
+            }            
+        }
+        private void downRedraw(int newY, int curY)
+        {
+            if (_curVirtY < _contentHeight)
+            {
+                if (newY + _elementHeight > _scrollHeight) return;
+                
+                for (; curY < newY; curY++)
+                {
+                    Console.SetCursorPosition(_x, _y + curY);
+                    Console.Write(' ');
+                    Console.SetCursorPosition(_x,_y + curY + _elementHeight );
+                    Console.Write(Border.vert);
+                }
+                _curY = newY;
+            }
+        }
+        private void redraw()
+        {
+            for (int i = 0; i < _fullHeight; i++)
+            {
+                Console.SetCursorPosition(_x, _y + i);
+                if (i < _curY || i > _curY + _elementHeight)
+                {
+                    Console.BackgroundColor = ConsoleColor.DarkGray;
+                    Console.Write(' ');
+                }
+                else
+                {
+                    Console.Write(Border.vert);
+                    Console.ForegroundColor = _color;
+                }
+            }
+        }
+        private void setLastPos()
+        {
+            clearScrollElement();
+            Border.drawVertical(_x,_y + _scrollHeight - _elementHeight, _elementHeight,_color);
+        }
+        private void clearScrollElement()
+        {
+            for (int i = 0; i < this._scrollHeight; i++)
+            {
+                Console.SetCursorPosition(_x, _y + i);
+                Console.Write(' ');
+            }
+        }
